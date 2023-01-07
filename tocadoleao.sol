@@ -3,27 +3,27 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts@4.8.0/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts@4.8.0/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts@4.8.0/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts@4.8.0/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts@4.8.0/access/Ownable.sol";
 import "@openzeppelin/contracts@4.8.0/utils/Counters.sol";
 
-contract TocaDoLeao is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, Ownable {
+contract TocaDoLeao is ERC721, ERC721Enumerable, ERC721Burnable, Ownable {
     using Counters for Counters.Counter;
 
     Counters.Counter private _tokenIdCounter;
 
-    constructor() ERC721("Toca do Leão", "TLWF") {}
+    constructor() ERC721("Toca do Leao", "TLWF") {
+        _tokenIdCounter.increment();
+    }
 
     function _baseURI() internal pure override returns (string memory) {
         return "https://luisleao.github.io/nfttocadoleao/nft/metadata.json";
     }
 
-    function safeMint(address to, string memory uri) public onlyOwner {
+    function safeMint(address to) public onlyOwner {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
-        _setTokenURI(tokenId, uri);
     }
 
     // The following functions are overrides required by Solidity.
@@ -35,17 +35,17 @@ contract TocaDoLeao is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnabl
         super._beforeTokenTransfer(from, to, tokenId, batchSize);
     }
 
-    function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
+    function _burn(uint256 tokenId) internal override(ERC721) {
         super._burn(tokenId);
     }
 
     function tokenURI(uint256 tokenId)
         public
-        view
-        override(ERC721, ERC721URIStorage)
+        pure
+        override(ERC721)
         returns (string memory)
     {
-        return super.tokenURI(tokenId);
+        return _baseURI();
     }
 
     function supportsInterface(bytes4 interfaceId)
